@@ -3,20 +3,14 @@
 <p align="center"><strong>一份材料，一句指令，生成分轮问答与本地网页。</strong></p>
 
 <p align="center">
-  按技术岗位或产品经理独立组织分轮问题、连续追问和有依据的参考答案，<br>
-  交付可搜索、可折叠、可离线阅读的网页。
-</p>
-
-<p align="center">
-  <code>Agent Skill</code> · <code>逐点覆盖</code> · <code>追问有答案</code> · <code>中性展示</code> · <a href="LICENSE">MIT</a>
+  <code>Agent Skill</code> · 技术岗位 / 产品经理 · <a href="LICENSE">MIT</a>
 </p>
 
 <p align="center">
   <a href="#quick-start">快速开始</a> ·
-  <a href="#compatibility">平台兼容</a> ·
+  <a href="#compatibility">支持平台</a> ·
   <a href="#features">核心能力</a> ·
-  <a href="#tracks">岗位路径</a> ·
-  <a href="#preview">更多效果</a> ·
+  <a href="#tracks">岗位与预览</a> ·
   <a href="#privacy">隐私说明</a>
 </p>
 
@@ -24,192 +18,134 @@
 
 ## 快速开始
 
-### 1. 安装一次
+**1. 安装一次**
 
 ```sh
 npx skills add sherlockmen/resume-interview-drill -g
 ```
 
-按提示选择使用的平台。**DeepSeek Harness 选择 Codex**：两者默认共用 `~/.agents/skills/`。命令需要 Node.js/npm 与 Git；其他安装方式见下方。
+需 Node.js/npm 与 Git，按提示选择平台。
 
-### 2. 附上材料，说一句
-
-在 Agent 中提供简历文件或本地路径，可选附上岗位 JD，然后发送：
+**2. 附上简历，说一句**
 
 ```text
 使用 resume-interview-drill，帮我准备面试。
 ```
 
-需要指定方向时，加上“技术岗位”或“产品经理”即可。**分轮提问、逐点覆盖、追问与答案、事实缺口、本地网页及中性展示，全部内置在 Skill 中，无需重复交代。**
-
-完成后，点击 Agent 给出的本地网页链接开始练习。没有 JD 也能使用；两个方向同时准备时，分别生成独立网页。
+可附岗位 JD，或指定“技术岗位”“产品经理”。完成后打开生成的本地网页；全部流程已内置，无需长提示词。
 
 <a id="compatibility"></a>
 
+## 支持平台
+
+| 平台 | 安装器中选择 | 调用方式 |
+| --- | --- | --- |
+| [Codex](https://learn.chatgpt.com/docs/build-skills) | `codex` | `$resume-interview-drill` |
+| [Claude Code](https://code.claude.com/docs/en/skills) | `claude-code` | `/resume-interview-drill` |
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-filesystem/README.md) | `codex`（共享目录） | `/resume-interview-drill` |
+| [OpenCode](https://opencode.ai/docs/skills/) | `opencode` | 上方自然语言请求 |
+| [Hermes Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | `hermes-agent` | `/resume-interview-drill` |
+
+同一份 [Agent Skills](https://agentskills.io/specification) 技能包。按官方规范适配，已验证安装资源与网页构建，尚未逐一实测所有客户端。
+
 <details>
-<summary><strong>平台兼容与手动安装</strong> · Codex / Claude Code / DeepSeek Harness / OpenCode / Hermes</summary>
+<summary><strong>运行要求与手动安装</strong></summary>
 
-采用 [Agent Skills 标准](https://agentskills.io/specification)，所有流程都在 `SKILL.md` 及其相对引用文件中。使用同一份技能包，不依赖某个平台的专属工具。
+Agent 需能读取材料、写入本地文件和执行命令，环境需 Python 3.9+。PDF 解析、浏览器预览使用宿主工具；网页构建器仅依赖 Python 标准库。
 
-| 平台 | 安装器中选择 | 手动安装的默认用户目录 | 显式调用方式 |
-| --- | --- | --- | --- |
-| [Codex](https://learn.chatgpt.com/docs/build-skills) | `codex` | `~/.agents/skills/` | `$resume-interview-drill` |
-| [Claude Code](https://code.claude.com/docs/en/skills) | `claude-code` | `~/.claude/skills/` | `/resume-interview-drill` |
-| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-filesystem/README.md) | `codex`（共用目录） | `~/.agents/skills/` 或 `~/.dsh/skills/` | `/resume-interview-drill` |
-| [OpenCode](https://opencode.ai/docs/skills/) | `opencode` | `~/.config/opencode/skills/` | 使用上方自然语言请求 |
-| [Hermes Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | `hermes-agent` | `~/.hermes/skills/` | `/resume-interview-drill` |
+[下载 ZIP](https://github.com/sherlockmen/resume-interview-drill/archive/refs/heads/master.zip)，将完整文件夹命名为 `resume-interview-drill`，放入对应用户目录：
 
-**不用安装器：** [下载仓库 ZIP](https://github.com/sherlockmen/resume-interview-drill/archive/refs/heads/master.zip)，将完整文件夹命名为 `resume-interview-drill`，放进对应目录。最终结构应为 `<技能目录>/resume-interview-drill/SKILL.md`，并保留 `references/`、`scripts/`、`assets/`。不要只复制一个 Markdown 文件。自定义用户目录以宿主配置为准；安装后若未发现，重新开启会话。
+| 平台 | 默认用户目录 |
+| --- | --- |
+| Codex / DeepSeek Harness | `~/.agents/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| OpenCode | `~/.config/opencode/skills/` |
+| Hermes Agent | `~/.hermes/skills/` |
 
-**运行条件：** Agent 能读取材料、写入本地文件、执行命令，且环境中有 Python 3.9+。PDF 解析和浏览器预览使用宿主可用工具；构建器仅使用 Python 标准库。普通网页聊天框不等于具备这些能力的 Agent。
-
-目录与调用方式按各平台官方文档核对；安装参数见 [Skills CLI](https://github.com/vercel-labs/skills)。本仓库验证标准技能包、安装资源完整性和本地网页构建，未对以上所有客户端逐一完成端到端实测。其他支持同一标准且具备上述能力的平台，也可使用完整技能包。
+保留 `SKILL.md`、`references/`、`scripts/`、`assets/` 的相对位置。DeepSeek Harness 也支持 `~/.dsh/skills/`；自定义目录以宿主配置为准。安装后未发现技能时，重新开启会话。
 
 </details>
-
-<p align="center">
-  <a href="docs/images/overview.png"><img src="docs/images/overview.png" alt="本地网页总览：全文搜索、轮次筛选和可折叠的问答" width="960"></a>
-  <br><sub>使用完全虚构的练习项目，由内置构建器生成网页并实际截图；不包含真实个人材料。</sub>
-</p>
-
-<p align="center">
-  <a href="docs/demo.html">技术演示</a> · <a href="docs/product-demo.html">产品演示</a><br>
-  <sub>下载仓库后，用浏览器打开对应 HTML 即可体验；两套演示分别生成。</sub>
-</p>
 
 <a id="features"></a>
 
 ## 核心能力
 
-面向技术岗位与产品经理，把经历、技能与成果展开为可练习、可回查的问答。每次先选定岗位路径，题库与网页分别交付。
-
 <table>
   <tr>
     <td width="50%" valign="top">
-      <h3>01 · 每个信息点都涉及</h3>
-      背景、教育、任职、项目、技能与成果逐项编号，关联具体问题和答案。优先级只影响准备顺序与展开深度。
+      <h3>01 · 逐点覆盖</h3>
+      材料中的每个信息点都关联具体问答，低优先级信息也不遗漏。
     </td>
     <td width="50%" valign="top">
-      <h3>02 · 主问、追问都有答案</h3>
-      每道主问先给约 30—90 秒的口述回答，再按需补充实现或分析细节。每条列出的追问都提供参考答案。
+      <h3>02 · 追问有答案</h3>
+      主问给出口述参考回答，每条追问都有答案，并说明考察目的。
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <h3>03 · 讲清为什么这样问</h3>
-      区分一面、二面与负责人轮的验证目标，说明每题考察什么、需要哪些证据，以及如何继续追问。
+      <h3>03 · 事实有边界</h3>
+      区分材料自述、待确认内容与假设方案，不编造经历或业绩。
     </td>
     <td width="50%" valign="top">
-      <h3>04 · 保留事实与未知的边界</h3>
-      区分材料自述、用户确认、原理解释与假设方案。未知经历和数据标记待补，个人贡献与团队成果分别表述。
+      <h3>04 · 网页可回查</h3>
+      支持全文搜索、轮次筛选、答案折叠、逐点索引与待补清单。
     </td>
   </tr>
 </table>
 
-**一次交付：** 分轮题库与答案、逐点覆盖表、待补信息、准备优先级，以及本地网页入口。
-
-AI 按 Skill 指引分析材料、生成问答；Python 构建器负责校验题库、脱敏与生成网页。“全量覆盖”指当前材料中的全部信息点，开放问题的变化无法穷尽。
+> **交付：** 分轮问答、覆盖表、待补信息、准备优先级、本地 HTML。
+> 覆盖全部材料信息点；开放问题的变化无法穷尽。
 
 <a id="tracks"></a>
 
-## 两条独立的岗位路径
+## 岗位与预览
 
-共用覆盖、答案与事实规则；各自使用轮次、提问逻辑、题库和网页。以下是练习编排，可按岗位调整，不代表任何公司的固定流程或官方题库。
-
-### 技术岗位 · 实现 → 设计 → 判断
-
-| 轮次 | 提问如何递进 | 回答需要体现什么 |
-| --- | --- | --- |
-| **技术一面** | 一次真实请求 → 数据与状态 → 设计原因 → 具体故障 → 效果验证 → 本人贡献 | 还原实现过程，讲清个人决策，提供可核对的细节。 |
-| **技术二面** | 目标与约束 → 最小方案 → 逐次增加失败、规模、权限或成本条件 → 比较方案 → 验证 | 说明系统边界、异常恢复、方案代价与验收方法。 |
-| **负责人／CTO 轮** | 选择动机 → 行动与结果 → 关键判断 → 新业务验证 → 交付计划 | 用实际行动支持观点，明确优先级、业务指标与责任。 |
-
-涉及 Agent、RAG、LLM 或模型部署时，按经历补充执行链路、状态管理、工具调用、失败恢复与评估。详见[技术路径](references/technical-interviews.md)。
-
-### 产品经理 · 证据 → 取舍 → 价值
-
-| 轮次 | 提问如何递进 | 回答需要体现什么 |
-| --- | --- | --- |
-| **产品一面** | 具体项目 → 用户与问题 → 需求证据 → 方案形成 → 本人动作 → 结果复盘 | 还原实际工作，区分个人与团队贡献，说明证据的来源和限制。 |
-| **产品二面** | 目标与约束 → 备选方案 → 优先级 → 改变一个条件 → 验证与停止条件 | 说明机会成本、指标口径、反证和效果归因，区分相关与因果。 |
-| **产品负责人轮** | 过去实例 → 客户与付费方 → 竞争与替代 → 投入产出 → 路线图 → 协同决策 | 把用户问题联系到业务结果，说明资源分配、阶段验收及责任边界。 |
-
-按岗位追加 **C 端／增长、B 端／平台、AI 产品、资深／负责人** 侧重点；产品经理不默认套用技术系统设计题。
-
-方法综合了牛客、人人都是产品经理的公开经验分享，并以 Amazon、Atlassian 官方指南校验。来源、日期、适用边界与完整追问规则见[产品经理路径](references/product-manager-interviews.md#来源与适用边界)；经验样本不代表必问题目。
-
-<a id="preview"></a>
-
-## 更多效果
-
-### 产品路径
-
-<p>
-  <a href="docs/images/product-overview.png"><img src="docs/images/product-overview.png" alt="产品笔记：独立的经历复盘、产品分析、业务判断层次，以及带答案的产品取舍问题" width="960"></a><br>
-  <sub>「栖页」协作知识产品为完全虚构的演示设定；未使用真实个人经历或业务数据。</sub>
-</p>
-
-[示例数据](docs/product-demo-bank.json) · [演示页文件](docs/product-demo.html)
-
-### 技术路径
+两条路径分别生成题库、覆盖表和网页。以下轮次为练习编排，可按岗位调整。
 
 <table>
   <tr>
     <td width="50%" valign="top">
-      <strong>答案分层，追问有回应</strong><br>
-      <sub>主答、技术说明和追问答案分层展开，保留内容类型标签。</sub><br><br>
-      <a href="docs/images/answers.png"><img src="docs/images/answers.png" alt="答案详情：完整主答、技术说明及两条带答案的追问" width="480"></a>
+      <h3>技术岗位</h3>
+      <p><strong>实现 → 设计 → 判断</strong></p>
+      <p>一面：还原实现，核对本人贡献。<br>
+      二面：改变约束，比较方案与代价。<br>
+      负责人轮：判断业务价值与交付优先级。</p>
+      <a href="docs/images/overview.png"><img src="docs/images/overview.png" alt="技术路径网页：搜索、轮次筛选与问答总览" width="480"></a>
+      <p><a href="docs/demo.html">演示文件</a> · <a href="references/technical-interviews.md">提问方法</a></p>
     </td>
     <td width="50%" valign="top">
-      <strong>逐点索引，依据可回查</strong><br>
-      <sub>从信息点定位相关答案，也可从问题回查来源依据。</sub><br><br>
-      <a href="docs/images/coverage.png"><img src="docs/images/coverage.png" alt="逐点索引：来源引文、信息点与关联问题" width="480"></a>
+      <h3>产品经理</h3>
+      <p><strong>证据 → 取舍 → 价值</strong></p>
+      <p>一面：复盘项目，追查需求证据。<br>
+      二面：权衡优先级，验证指标与归因。<br>
+      负责人轮：连接客户、投入产出与路线图。</p>
+      <a href="docs/images/product-overview.png"><img src="docs/images/product-overview.png" alt="产品路径网页：经历复盘、产品分析与业务判断" width="480"></a>
+      <p><a href="docs/product-demo.html">演示文件</a> · <a href="references/product-manager-interviews.md">提问方法与来源</a></p>
+    </td>
+  </tr>
+</table>
+
+<sub>所有效果图均来自虚构示例，未使用个人简历。下载仓库后，用浏览器打开演示 HTML。</sub>
+
+### 答案与依据
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <strong>主答与追问分层展开</strong><br><br>
+      <a href="docs/images/answers.png"><img src="docs/images/answers.png" alt="完整主答、补充说明与带答案的连续追问" width="480"></a>
+    </td>
+    <td width="50%" valign="top">
+      <strong>信息点与问题相互定位</strong><br><br>
+      <a href="docs/images/coverage.png"><img src="docs/images/coverage.png" alt="来源引文、信息点与关联问答索引" width="480"></a>
     </td>
   </tr>
 </table>
 
 <details>
-<summary><strong>查看窄屏阅读效果</strong></summary>
+<summary><strong>窄屏效果</strong></summary>
 
-窄屏下调整导航与筛选布局，保留搜索、答案展开和内容收起操作。
-
-<img src="docs/images/mobile.png" alt="窄屏效果：导航、筛选与展开的参考答案" width="340">
-
-</details>
-
-技术示例包含“共享器材预约练习”和“文档问答练习”两个虚构项目。产品示例为「栖页」虚构练习。**每套分别包含 5 个信息点、6 道主问题、12 条带答案的追问**，不限制实际生成规模。
-
-<details>
-<summary>从示例数据重新生成演示页</summary>
-
-在包含 `SKILL.md` 的目录运行：
-
-```sh
-python3 scripts/build_notes.py docs/demo-bank.json --output docs/demo.html
-python3 scripts/build_notes.py docs/product-demo-bank.json --output docs/product-demo.html
-```
-
-</details>
-
-## 更多用法
-
-<details>
-<summary><strong>结合岗位 JD，调整深挖方向</strong></summary>
-
-```text
-使用 resume-interview-drill，按这份 JD 准备 Agent 工程师方向。
-```
-
-</details>
-
-<details>
-<summary><strong>更新材料，修订已有题库</strong></summary>
-
-提供更新后的材料与已有题库，再发送：
-
-```text
-使用 resume-interview-drill，按更新后的材料修订现有内容。
-```
+<img src="docs/images/mobile.png" alt="窄屏下的导航、搜索与答案展开" width="340">
 
 </details>
 
@@ -217,40 +153,35 @@ python3 scripts/build_notes.py docs/product-demo-bank.json --output docs/product
 
 ## 中性展示与隐私
 
-- **中性名称：** 技术页使用“技术笔记”“基础／进阶／综合”；产品页使用“产品笔记”“经历复盘／产品分析／业务判断”。正文打开前先显示封面。
-- **快速收起：** 按钮、Esc、窗口失焦或切换标签均可收起正文并清空搜索；恢复焦点不会自动展开。
-- **离线阅读：** HTML 自带样式、脚本和展示数据，不自动加载外部资源，不持久保存阅读记录；参考链接仅在主动点击时打开。
-- **本地交付：** 默认不上传或公开部署个人材料；发布仓库时，仅保留虚构示例，排除私人材料、题库、网页和运行缓存。
+- **中性展示：** 使用“技术笔记”“产品笔记”等名称，替换指定敏感词，隐藏身份信息。
+- **快速收起：** 默认显示封面；按 Esc、切换窗口或标签时收起正文并清空搜索。
+- **本地阅读：** 网页自包含，不自动加载外部资源，不保存阅读记录；默认不上传或公开部署个人材料。
+
+中性展示不提供加密或访问控制；材料分析仍由所使用的 AI 工具处理。
 
 <details>
-<summary><strong>查看脱敏范围与使用边界</strong></summary>
+<summary><strong>脱敏范围</strong></summary>
 
-构建器默认替换“简历、面试、求职、跳槽、招聘”，按内置规则匹配常见邮箱和连续数字的中国大陆手机号。姓名、其他联系方式与身份链接由代理识别，再通过 `--redact` 传入并检查。中性展示降低屏幕暴露，不提供加密或访问控制；材料分析仍由所使用的 AI 工具处理。
-
-参考答案保留材料自述与用户确认的边界，不将业绩自述视为独立核实。未知经历使用待补标记，假设方案不能作为个人真实经历。构建校验检查映射与非空回答；事实准确性和回答是否充分仍需核对。
+默认替换“简历、面试、求职、跳槽、招聘”，匹配常见邮箱与连续数字的中国大陆手机号。姓名、其他联系方式及身份链接由 Agent 识别并传入构建器。交付前检查正文、源码、标题与路径。
 
 </details>
 
-## 文件说明
+<details>
+<summary><strong>文件与扩展</strong></summary>
 
 | 文件 | 用途 |
 | --- | --- |
-| [SKILL.md](SKILL.md) | 工作流程、全量覆盖规则、答案要求与验收标准。 |
-| [agents/openai.yaml](agents/openai.yaml) | Codex 显示名称、简介与默认提示。 |
-| [references/technical-interviews.md](references/technical-interviews.md) | 技术岗位的轮次矩阵与逐轮追问方法。 |
-| [references/product-manager-interviews.md](references/product-manager-interviews.md) | 产品经理的轮次、题型、岗位分支及公开来源。 |
-| [references/agent-lenses.md](references/agent-lenses.md) | Agent 相关岗位的补充考察维度。 |
-| [scripts/build_notes.py](scripts/build_notes.py) | 校验已生成的 JSON 题库、脱敏并构建网页。 |
-| [assets/notes.html](assets/notes.html) | 自包含网页模板与交互。 |
-| [docs/](docs/) | 虚构示例数据、演示页与效果图。 |
-| [LICENSE](LICENSE) | MIT 开源许可证。 |
+| [SKILL.md](SKILL.md) | 完整流程、覆盖规则、答案要求与验收标准 |
+| [references/](references/) | 技术、产品与 Agent 岗位的提问方法 |
+| [scripts/build_notes.py](scripts/build_notes.py) | 题库校验、脱敏与网页构建 |
+| [assets/notes.html](assets/notes.html) | 离线网页模板 |
+| [docs/](docs/) | 虚构示例、演示页与截图 |
+| [agents/openai.yaml](agents/openai.yaml) | Codex 可选界面信息 |
 
-分享时保留这些文件的相对位置。题库结构、构建命令与 `--redact` 用法见 [SKILL.md](SKILL.md#使用内置构建器)。
+题库结构、构建命令与脱敏参数见 [SKILL.md](SKILL.md#使用内置构建器)。
+
+</details>
 
 ## 许可证
 
-本项目采用 [MIT License](LICENSE)。引用的外部文章与指南保留各自权利；仓库仅链接来源并归纳方法。
-
----
-
-<sub>文档编排参考：<a href="https://github.com/langgenius/dify">Dify</a> 的首屏与导航、<a href="https://github.com/nextlevelbuilder/ui-ux-pro-max-skill">UI UX Pro Max</a> 的效果图展示、<a href="https://github.com/vercel-labs/agent-skills">Vercel Agent Skills</a> 的任务说明，以及 <a href="https://github.com/obra/superpowers">Superpowers</a> 的流程组织。</sub>
+[MIT](LICENSE)。外部文章与指南保留各自权利。
