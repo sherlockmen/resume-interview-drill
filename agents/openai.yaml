@@ -1,0 +1,4 @@
+interface:
+  display_name: "技术研习资料"
+  short_description: "逐项整理技术问题、递进追问和有事实依据的回答，形成适合办公阅读的本地网页"
+  default_prompt: "使用 $resume-interview-drill，根据我提供的材料和目标方向，逐点覆盖基础、进阶、综合问题及其所有追问和回答，标注依据与待补信息，最终生成中性展示的本地网页。"

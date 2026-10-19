@@ -1,0 +1,8 @@
+# Local outputs and source documents may contain private information.
+__pycache__/
+*.py[cod]
+.DS_Store
+outputs/
+resume/
+*.pdf
+*.docx
