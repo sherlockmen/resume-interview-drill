@@ -44,16 +44,16 @@ npx skills add sherlockmen/resume-interview-drill -g
 
 | 平台 | 安装方式 | 调用方式 |
 | --- | --- | --- |
-| [WorkBuddy](https://www.codebuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market) | 上传技能包 | 上方指令 |
-| [豆包工作（PC）](https://www.feishu.cn/content/article/7677519271848610746) | 本地技能导入，待验证 | 在“更多技能”中选择 |
-| [TRAE 国内版](https://docs.trae.cn/ide_skills) | 安装器选 `trae-cn` | 上方指令 |
-| [CodeBuddy Code](https://www.codebuddy.cn/docs/cli/skills) | 安装器选 `codebuddy` | 上方指令 |
-| [Qwen Code](https://qwenlm.github.io/qwen-code-docs/en/users/features/skills/) | 安装器选 `qwen-code` | 上方指令 |
+| [WorkBuddy](https://www.codebuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market) | 上传技能包 | 使用 `resume-interview-drill`，帮我准备面试。 |
+| [豆包工作（PC）](https://www.feishu.cn/content/article/7677519271848610746) | 本地技能导入，待验证 | 在“更多技能”中选择 `resume-interview-drill` |
+| [TRAE 国内版](https://docs.trae.cn/ide_skills) | 安装器选 `trae-cn` | 使用 `resume-interview-drill`，帮我准备面试。 |
+| [CodeBuddy Code](https://www.codebuddy.cn/docs/cli/skills) | 安装器选 `codebuddy` | 使用 `resume-interview-drill`，帮我准备面试。 |
+| [Qwen Code](https://qwenlm.github.io/qwen-code-docs/en/users/features/skills/) | 安装器选 `qwen-code` | 使用 `resume-interview-drill`，帮我准备面试。 |
 | [Kimi Code CLI](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/skills.html) | 安装器选 `kimi-code-cli` | `/skill:resume-interview-drill` |
 | [Codex](https://learn.chatgpt.com/docs/build-skills) | 安装器选 `codex` | `$resume-interview-drill` |
 | [Claude Code](https://code.claude.com/docs/en/skills) | 安装器选 `claude-code` | `/resume-interview-drill` |
 | [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-filesystem/README.md) | 安装器选 `codex`（共用目录） | `/resume-interview-drill` |
-| [OpenCode](https://opencode.ai/docs/skills/) | 安装器选 `opencode` | 上方指令 |
+| [OpenCode](https://opencode.ai/docs/skills/) | 安装器选 `opencode` | 使用 `resume-interview-drill`，帮我准备面试。 |
 | [Hermes Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | 安装器选 `hermes-agent` | `/resume-interview-drill` |
 
 平台名链接到官方说明。已检查安装文件和网页生成，尚未逐个客户端实测。豆包工作文档未说明完整技能包格式，导入待验证；普通豆包聊天不在此列。
@@ -63,7 +63,7 @@ npx skills add sherlockmen/resume-interview-drill -g
 
 AI 工具需能读取材料、保存文件、运行 Python 3.9+。PDF 读取和网页预览使用平台自带工具；生成网页无需安装 Python 扩展库。
 
-手动安装：解压上方 ZIP，将文件夹改名为 `resume-interview-drill`，放入对应目录：
+手动安装：[下载 ZIP](https://github.com/sherlockmen/resume-interview-drill/archive/refs/heads/master.zip) 并解压，将文件夹改名为 `resume-interview-drill`，放入对应目录：
 
 | 平台 | 默认用户目录 |
 | --- | --- |
@@ -115,28 +115,27 @@ AI 工具需能读取材料、保存文件、运行 Python 3.9+。PDF 读取和�
 
 技术岗位和产品经理分别生成问答与网页。轮次可按实际流程调整。
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>技术岗位</h3>
-      <p>一面：项目怎么实现，自己做了什么。<br>
-      二面：遇到故障、流量增长等情况，如何选方案。<br>
-      负责人轮：业务价值是什么，先做什么，如何交付。</p>
-      <a href="docs/images/overview.png"><img src="docs/images/overview.png" alt="技术岗位示例：搜索、按轮次查看问答" width="480"></a>
-      <p><a href="docs/demo.html">演示文件</a> · <a href="references/technical-interviews.md">提问方法</a></p>
-    </td>
-    <td width="50%" valign="top">
-      <h3>产品经理</h3>
-      <p>一面：需求从哪里来，自己推动了什么。<br>
-      二面：为什么先做它，如何衡量效果、确认变化原因。<br>
-      负责人轮：为谁解决问题，投入是否值得，下一步做什么。</p>
-      <a href="docs/images/product-overview.png"><img src="docs/images/product-overview.png" alt="产品经理示例：项目复盘、产品分析与业务判断" width="480"></a>
-      <p><a href="docs/product-demo.html">演示文件</a> · <a href="references/product-manager-interviews.md">提问方法与来源</a></p>
-    </td>
-  </tr>
-</table>
+动图使用虚构材料，展示筛选、搜索、查看回答与逐项核对。
 
-<sub>效果图均来自虚构示例。下载仓库后，用浏览器打开演示文件。</sub>
+### 技术岗位
+
+一面：项目怎么实现，自己做了什么。<br>
+二面：遇到故障、流量增长等情况，如何选方案。<br>
+负责人轮：业务价值是什么，先做什么，如何交付。
+
+![技术岗位操作演示：筛选轮次、展开回答与追问、搜索问题、核对简历条目](docs/images/technical-demo.gif)
+
+[技术岗位提问方法](references/technical-interviews.md)
+
+### 产品经理
+
+一面：需求从哪里来，自己推动了什么。<br>
+二面：为什么先做它，如何衡量效果、确认变化原因。<br>
+负责人轮：为谁解决问题，投入是否值得，下一步做什么。
+
+![产品经理操作演示：筛选轮次、展开回答与追问、搜索问题、核对简历条目](docs/images/product-demo.gif)
+
+[产品经理提问方法与来源](references/product-manager-interviews.md)
 
 ### 回答与简历对照
 
@@ -186,7 +185,7 @@ AI 工具需能读取材料、保存文件、运行 Python 3.9+。PDF 读取和�
 | [references/](references/) | 技术、产品与 Agent 岗位的提问方法 |
 | [scripts/build_notes.py](scripts/build_notes.py) | 检查题库、隐藏敏感信息、生成网页 |
 | [assets/notes.html](assets/notes.html) | 离线网页模板 |
-| [docs/](docs/) | 虚构示例、演示页与截图 |
+| [docs/](docs/) | 虚构示例、动图与截图 |
 | [agents/openai.yaml](agents/openai.yaml) | Codex 中显示的技能名称与说明 |
 
 修改题库或网页时，查看 [SKILL.md](SKILL.md#使用内置构建器)。
