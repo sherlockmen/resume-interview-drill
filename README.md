@@ -1,6 +1,6 @@
 <h1 align="center">Resume Interview Drill</h1>
 
-<p align="center"><strong>一份材料，一句指令，生成分轮问答与本地网页。</strong></p>
+<p align="center"><strong>根据你的简历，生成各轮面试问题、追问和参考答案，并整理成可离线查看的网页。</strong></p>
 
 <p align="center">
   <code>Agent Skill</code> · 技术岗位 / 产品经理 · <a href="LICENSE">MIT</a>
