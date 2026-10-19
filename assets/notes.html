@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="light">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23276572'/%3E%3Cpath d='M10 9h12M10 16h12M10 23h8' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-  <title>技术笔记</title>
+  <title>研习笔记</title>
   <style>
     :root {
       --paper: #f5f7fa;
@@ -195,8 +195,8 @@
 <body>
   <main id="cover" class="cover">
     <section class="cover-sheet" aria-labelledby="cover-title">
-      <h1 id="cover-title">技术笔记</h1>
-      <p class="cover-description">系统实现、工程约束与技术判断的学习记录。</p>
+      <h1 id="cover-title">研习笔记</h1>
+      <p class="cover-description">问题、依据与判断的学习记录。</p>
       <button id="open-notes" class="primary" type="button" aria-controls="workspace" aria-expanded="false">打开笔记</button>
       <p class="cover-hint">按 Esc 或切换窗口，内容会自动收起。</p>
       <p id="cover-error" class="cover-error" role="alert" hidden></p>
@@ -248,7 +248,17 @@
     const questionText = new Map(questions.map(question => [text(question.id), normalize(flatten(question) + ' ' + array(question.fact_ids).map(id => flatten(factsById.get(text(id)))).join(' '))]));
     const sourceText = new Map(sources.map(source => [source, normalize(flatten(source))]));
     const state = { open: false, view: 'entries', round: 'all', search: '' };
-    const roundNames = { 1: '基础', 2: '进阶', 3: '综合' };
+    const productTrack = data.track === 'product';
+    const noteTitle = productTrack ? '产品笔记' : '技术笔记';
+    const subtitle = productTrack ? '用户 · 取舍 · 价值' : '实现 · 约束 · 判断';
+    const roundNames = productTrack
+      ? { 1: '经历复盘', 2: '产品分析', 3: '业务判断' }
+      : { 1: '基础', 2: '进阶', 3: '综合' };
+    document.title = noteTitle;
+    document.getElementById('cover-title').textContent = noteTitle;
+    document.querySelector('.cover-description').textContent = productTrack
+      ? '用户问题、产品取舍与业务价值的学习记录。'
+      : '系统实现、工程约束与技术判断的学习记录。';
     const viewNames = { entries: '条目', facts: '逐点索引', gaps: '待补记录', sources: '参考资料' };
     const followupCount = questions.reduce((total, question) => total + array(question.followups).length, 0);
     let content;
@@ -477,7 +487,7 @@
     function renderEntries() {
       const visible = filteredQuestions();
       const count = visible.reduce((total, question) => total + array(question.followups).length, 0);
-      viewHeader('条目', visible.length + ' / ' + questions.length + ' 条 · 延伸 ' + count + ' 条', '按基础、进阶和综合组织。主答、依据与延伸讨论可分别展开。');
+      viewHeader('条目', visible.length + ' / ' + questions.length + ' 条 · 延伸 ' + count + ' 条', '按' + Object.values(roundNames).join('、') + '组织。主答、依据与延伸讨论可分别展开。');
       if (!visible.length) return emptyState();
       const list = node('div', 'entry-list');
       list.id = 'entry-list';
@@ -650,8 +660,8 @@
       host.hidden = false;
       openButton.setAttribute('aria-expanded', 'true');
       const header = node('header', 'workspace-header');
-      const title = node('h1', 'workspace-title', '技术笔记');
-      title.append(node('span', 'header-subtitle', '实现 · 约束 · 判断'));
+      const title = node('h1', 'workspace-title', noteTitle);
+      title.append(node('span', 'header-subtitle', subtitle));
       const close = button('收起内容', () => closeNotes(true), 'quiet-button');
       close.id = 'close-notes';
       close.append(node('span', 'key-hint', 'Esc'));
@@ -691,7 +701,7 @@
       roundLabel.htmlFor = 'round-filter';
       roundFilter = node('select');
       roundFilter.id = 'round-filter';
-      for (const [value, label] of [['all', '全部'], ['1', '基础'], ['2', '进阶'], ['3', '综合']]) {
+      for (const [value, label] of [['all', '全部'], ...Object.entries(roundNames)]) {
         const option = node('option', '', label);
         option.value = value;
         roundFilter.append(option);

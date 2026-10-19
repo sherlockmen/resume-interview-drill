@@ -11,8 +11,9 @@ AVOID = ("简历", "面试", "求职", "跳槽", "招聘")
 REPLACEMENTS = (
     ("面试官", "评审者"), ("候选人", "参与者"),
     ("技术一面", "基础讨论"), ("技术二面", "进阶讨论"),
+    ("产品一面", "经历复盘"), ("产品二面", "产品分析"), ("产品负责人面", "业务判断"),
     ("负责人面", "综合讨论"), ("一面", "基础讨论"), ("二面", "进阶讨论"),
-    ("简历", "材料"), ("面试", "技术讨论"), ("求职", "职业规划"),
+    ("简历", "材料"), ("面试", "讨论"), ("求职", "职业规划"),
     ("跳槽", "方向调整"), ("招聘", "团队建设"),
 )
 EMAIL = re.compile(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}")
@@ -26,6 +27,7 @@ FIELDS = {
 
 
 def validate(bank):
+    assert bank.get("track", "technical") in ("technical", "product"), "Unknown preparation track"
     facts, questions = bank["facts"], bank["questions"]
     fact_ids = {f["id"] for f in facts}
     assert len(fact_ids) == len(facts), "Duplicate point IDs"
@@ -71,7 +73,7 @@ def display_bank(bank, identities):
     stats = validate(bank)
     safe = {key: [{k: item[k] for k in fields if k in item} for item in bank[key]]
             for key, fields in FIELDS.items()}
-    safe.update(version=bank.get("version", ""), stats=stats)
+    safe.update(version=bank.get("version", ""), track=bank.get("track", "technical"), stats=stats)
     safe = sanitize(safe, identities)
     assert validate(safe) == stats, "Display conversion changed coverage"
     assert [f["id"] for f in safe["facts"]] == [f["id"] for f in bank["facts"]], "Point IDs changed"
@@ -107,6 +109,16 @@ def self_check():
     html, stats = build(example, '<script type="application/json">__DATA_JSON__</script>', ["示例姓名"])
     assert stats["total_answers"] == 2 and stats["covered_points"] == 1
     assert html.count("</script>") == 1 and "\\u003c/script\\u003e" in html
+    assert display_bank(example, ["示例姓名"])["track"] == "technical"
+    product = dict(example, track="product")
+    assert display_bank(product, ["示例姓名"])["track"] == "product"
+    assert "技术讨论" not in display_bank(product, ["示例姓名"])["questions"][0]["question"]
+    try:
+        validate(dict(example, track="mixed"))
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError("Unknown track was accepted")
     broken = json.loads(json.dumps(example))
     broken["questions"][0]["followups"][0]["answer"] = ""
     try:

@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23276572'/%3E%3Cpath d='M10 9h12M10 16h12M10 23h8' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+  <title>研习笔记</title>
+  <style>
+    :root {
+      --paper: #f5f7fa;
+      --surface: #ffffff;
+      --ink: #172d43;
+      --muted: #637486;
+      --line: #dce4ec;
+      --accent: #276572;
+      --wash: #edf5f6;
+      --focus: #236a91;
+      --body: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --mono: "SFMono-Regular", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: auto; scrollbar-gutter: stable; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--body); font-size: 15px; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+    [hidden] { display: none !important; }
+    button, input, select { font: inherit; }
+    button, a, summary, input, select { -webkit-tap-highlight-color: transparent; }
+    button { color: inherit; cursor: pointer; }
+    button:disabled { cursor: default; opacity: .45; }
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; overflow-wrap: anywhere; }
+    button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible, select:focus-visible, [tabindex="-1"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+    button, summary { touch-action: manipulation; }
+    h1, h2, h3, h4, p, ul, ol, blockquote, pre, figure { margin: 0; }
+    h1, h2, h3, h4 { font-weight: 650; line-height: 1.5; }
+    code { font-family: var(--mono); font-size: .82em; overflow-wrap: anywhere; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+    .cover { min-height: 100svh; display: grid; align-content: start; padding: clamp(60px, 13vh, 132px) 28px 40px; }
+    .cover-sheet { width: min(100%, 460px); margin: 0 auto; padding: 30px 0 30px 25px; border-left: 3px solid var(--accent); }
+    .cover h1 { font-size: 27px; letter-spacing: .04em; }
+    .cover-description { margin-top: 12px; max-width: 28em; color: var(--muted); }
+    .primary { padding: 10px 19px; border: 1px solid var(--accent); border-radius: 6px; background: var(--accent); color: white; font-weight: 600; }
+    .primary:hover { background: #204f5a; }
+    #open-notes { margin-top: 26px; }
+    .cover-hint { margin-top: 20px; font-size: 12px; color: var(--muted); }
+    .cover-error { margin-top: 16px; color: #8a4e37; font-size: 13px; }
+    .workspace { max-width: 1360px; margin: 0 auto; padding: 0 32px 70px; }
+    .workspace-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 78px; margin-bottom: 25px; background: var(--paper); border-bottom: 1px solid var(--line); }
+    .workspace-title { font-size: 21px; letter-spacing: .025em; }
+    .header-subtitle { margin-left: 15px; color: var(--muted); font-size: 12px; font-weight: 400; letter-spacing: 0; }
+    .quiet-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid var(--line); border-radius: 5px; padding: 7px 12px; background: var(--surface); white-space: nowrap; }
+    .quiet-button:hover { border-color: #a6b8c8; background: #f9fbfd; }
+    .key-hint { padding: 0 5px; color: var(--muted); font: 11px/1.8 var(--mono); background: var(--paper); border: 1px solid var(--line); border-radius: 3px; }
+    .workspace-layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 34px; align-items: start; }
+    .sidebar { position: sticky; top: 103px; }
+    .nav { display: grid; gap: 5px; }
+    .nav-button { text-align: left; border: 0; border-left: 2px solid transparent; border-radius: 0 4px 4px 0; background: none; padding: 10px 13px; color: var(--muted); }
+    .nav-button:hover { color: var(--ink); background: #edf1f6; }
+    .nav-button[aria-current="page"] { color: var(--accent); background: var(--wash); border-left-color: var(--accent); font-weight: 600; }
+    .sidebar-note { margin: 25px 13px 0; color: var(--muted); font-size: 12px; line-height: 1.9; }
+    .sidebar-note span { display: block; }
+    .content-column { min-width: 0; }
+    .filters { display: grid; grid-template-columns: minmax(0, 1fr) 134px auto; gap: 10px; align-items: end; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .filter-field { min-width: 0; display: grid; gap: 6px; }
+    .filter-field label { color: var(--muted); font-size: 12px; }
+    .filter-field input, .filter-field select { width: 100%; min-height: 42px; min-width: 0; border: 1px solid #becbd7; border-radius: 5px; background: var(--surface); color: var(--ink); padding: 8px 11px; }
+    .filter-field input::placeholder { color: #788a9c; font-size: 13px; }
+    .filter-field select:disabled { color: var(--muted); background: #edf1f5; }
+    .filters .quiet-button { min-height: 42px; }
+    .view-header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 24px 0 16px; }
+    .view-title { font-size: 18px; }
+    .result-count { color: var(--muted); font-size: 12px; text-align: right; }
+    .view-description { color: var(--muted); font-size: 13px; margin-bottom: 18px; max-width: 65ch; }
+    .entry-list { display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; gap: 22px; }
+    .entry { min-width: 0; padding: 23px 26px; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; scroll-margin-top: 102px; }
+    .entry.targeted { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+    .entry-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; color: var(--muted); font-size: 12px; }
+    .entry-id { color: var(--accent); font-size: 12px; }
+    .entry-priority { font: 11px/1.4 var(--mono); color: var(--muted); }
+    .entry h3 { margin-top: 11px; font-size: 17px; overflow-wrap: anywhere; }
+    .entry-body { margin-top: 19px; }
+    details > summary { cursor: pointer; list-style-position: outside; }
+    details > summary::marker { color: var(--muted); font-size: .8em; }
+    .answer-block { border-top: 1px solid var(--line); }
+    .answer-block > summary { padding: 12px 0; margin-left: 16px; font-weight: 600; font-size: 14px; }
+    .answer-block > summary .type-badge { margin-left: 10px; vertical-align: 1px; }
+    .type-badge { display: inline-block; padding: 1px 7px; border-radius: 4px; color: #326157; background: #edf5f1; font-size: 11px; line-height: 1.7; font-weight: 500; }
+    .type-badge.pending { background: #fbf2e5; color: #8d622e; }
+    .type-badge.principle { background: #eef1f7; color: #526585; }
+    .type-badge.proposal { background: #eaf3f8; color: #37677d; }
+    .type-badge.estimate { background: #f1eff8; color: #6c5b8c; }
+    .answer-content { min-width: 0; padding: 3px 0 17px; max-width: 78ch; }
+    .rich { min-width: 0; overflow-wrap: anywhere; }
+    .rich p { white-space: pre-wrap; }
+    .rich p + p, .rich p + ul, .rich p + ol, .rich ul + p, .rich ol + p { margin-top: 12px; }
+    .rich ul, .rich ol { padding-left: 22px; }
+    .rich li + li { margin-top: 5px; }
+    .rich h4 { font-size: 14px; margin: 15px 0 7px; }
+    .technical-details { border-left: 2px solid var(--line); margin-top: 18px; padding-left: 15px; }
+    .technical-heading { color: var(--muted); font-size: 12px; font-weight: 500; margin-bottom: 8px; }
+    .code-block { min-width: 0; max-width: 100%; margin: 14px 0; overflow: hidden; border: 1px solid var(--line); border-radius: 5px; background: #f3f6f9; }
+    .code-label { padding: 5px 12px; border-bottom: 1px solid var(--line); color: var(--muted); font: 11px/1.8 var(--mono); }
+    .code-block pre { max-width: 100%; padding: 13px 14px; overflow-x: auto; overscroll-behavior-x: contain; tab-size: 2; color: #24455c; }
+    .code-block code { display: block; white-space: pre; overflow-wrap: normal; font: 12px/1.8 var(--mono); }
+    .evidence { border-top: 1px solid var(--line); }
+    .evidence > summary { padding: 12px 0; margin-left: 16px; color: var(--muted); font-size: 13px; }
+    .evidence-meta { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 7px 12px; margin: 3px 0 15px; font-size: 13px; }
+    .evidence-meta dt { color: var(--muted); }
+    .evidence-meta dd { margin: 0; overflow-wrap: anywhere; }
+    .evidence-list { list-style: none; padding: 0; font-size: 13px; }
+    .evidence-list li { padding: 12px 0; border-top: 1px dashed var(--line); }
+    .text-button { padding: 0; border: 0; background: transparent; color: var(--accent); text-align: left; text-decoration: underline; text-decoration-color: #b8ced2; text-underline-offset: 4px; overflow-wrap: anywhere; }
+    .text-button:hover { text-decoration-color: var(--accent); }
+    .evidence-point { margin-left: 10px; }
+    .source-location { color: var(--muted); font-size: 12px; margin: 6px 0; }
+    .source-quote { margin-top: 7px; padding: 8px 12px; border-left: 2px solid #c4d3df; color: #52677b; background: #f8fafc; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .followup-heading { font-size: 12px; font-weight: 500; color: var(--muted); margin: 20px 0 8px; }
+    .followup { border-top: 1px solid var(--line); }
+    .followup > summary { margin-left: 16px; padding: 12px 0; font-size: 14px; line-height: 1.75; overflow-wrap: anywhere; }
+    .followup-content { padding: 1px 0 16px 16px; max-width: 78ch; }
+    .followup-content .type-badge { margin-bottom: 9px; }
+    .entry-gaps { color: #7b603b; background: #fcf8f0; margin-top: 17px; padding: 11px 14px; border-radius: 4px; font-size: 12px; }
+    .entry-gaps ul { padding-left: 17px; margin-top: 5px; }
+    .entry-sources { display: flex; gap: 8px 15px; flex-wrap: wrap; font-size: 12px; margin-top: 15px; }
+    .index-list { border-top: 1px solid var(--line); }
+    .fact-row { background: var(--surface); border-bottom: 1px solid var(--line); scroll-margin-top: 102px; }
+    .fact-row > summary { display: list-item; margin-left: 19px; padding: 16px 18px 16px 3px; }
+    .fact-summary { display: inline-grid; grid-template-columns: 86px minmax(0, 1fr); width: calc(100% - 5px); gap: 9px; vertical-align: top; font-size: 14px; }
+    .fact-summary code { color: var(--accent); font-size: 11px; padding-top: 3px; }
+    .fact-detail { padding: 0 22px 20px 25px; font-size: 13px; }
+    .fact-detail .source-quote { margin-bottom: 12px; }
+    .fact-question-links { list-style: none; display: grid; gap: 9px; padding: 0; margin-top: 8px; }
+    .fact-question-links button { font-size: 13px; line-height: 1.8; }
+    .fact-question-links code { margin-right: 10px; }
+    .gap-record { background: var(--surface); border-bottom: 1px solid var(--line); }
+    .gap-record > summary { padding: 16px 17px 16px 3px; margin-left: 19px; font-size: 14px; }
+    .gap-record > summary code { color: var(--accent); margin-right: 10px; }
+    .gap-record-body { padding: 0 23px 20px; font-size: 13px; }
+    .gap-record-body ul { padding-left: 19px; margin: 0 0 14px; }
+    .gap-record-body li + li { margin-top: 6px; }
+    .source-list { list-style: none; padding: 0; }
+    .source-item { padding: 20px 0; border-top: 1px solid var(--line); }
+    .source-item:first-child { padding-top: 0; border-top: 0; }
+    .source-title { font-size: 15px; font-weight: 600; }
+    .source-domain { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+    .source-note { margin-top: 9px; max-width: 75ch; color: #52677b; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .empty-state { padding: 38px 24px; border: 1px dashed #bdcbd8; border-radius: 5px; color: var(--muted); }
+    .empty-state strong { display: block; color: var(--ink); font-size: 15px; font-weight: 600; margin-bottom: 5px; }
+    .empty-state p { font-size: 13px; }
+    .empty-state button { margin-top: 16px; }
+    .footer { margin-top: 35px; padding-top: 17px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    @media (min-width: 1500px) { .workspace { max-width: 1390px; } .workspace-layout { gap: 48px; } }
+    @media (max-width: 900px) { .workspace { padding-left: 22px; padding-right: 22px; } .workspace-layout { grid-template-columns: 145px minmax(0, 1fr); gap: 22px; } .entry { padding: 20px; } .header-subtitle { display: none; } }
+    @media (max-width: 680px) {
+      body { font-size: 14px; }
+      .workspace { padding: 0 15px 45px; }
+      .workspace-header { min-height: 66px; margin-bottom: 13px; gap: 12px; }
+      .workspace-title { font-size: 19px; }
+      .workspace-layout { display: block; }
+      .sidebar { position: static; margin-bottom: 19px; }
+      .nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+      .nav-button { text-align: center; font-size: 12px; padding: 9px 2px; border-left: 0; border-bottom: 2px solid transparent; border-radius: 4px 4px 0 0; }
+      .nav-button[aria-current="page"] { border-left: 0; border-bottom-color: var(--accent); }
+      .sidebar-note { display: none; }
+      .filters { grid-template-columns: minmax(0, 1fr) 104px; gap: 8px; padding-bottom: 18px; }
+      .filters > .quiet-button { grid-column: 1 / -1; justify-self: end; min-height: 30px; padding: 2px 9px; font-size: 12px; }
+      .filter-field input, .filter-field select { padding-left: 9px; padding-right: 8px; }
+      .filter-field input::placeholder { font-size: 12px; }
+      .view-header { margin-top: 19px; align-items: start; }
+      .view-title { font-size: 17px; }
+      .result-count { max-width: 50%; line-height: 1.7; }
+      .entry { padding: 18px 16px; border-radius: 5px; scroll-margin-top: 80px; }
+      .entry-list { gap: 15px; }
+      .entry h3 { font-size: 16px; }
+      .entry-body { margin-top: 15px; }
+      .answer-content, .followup-content { font-size: 14px; }
+      .answer-block > summary .type-badge { margin-left: 7px; }
+      .evidence-meta { grid-template-columns: 60px minmax(0, 1fr); gap: 7px 9px; }
+      .fact-summary { grid-template-columns: 76px minmax(0, 1fr); gap: 5px; font-size: 13px; }
+      .fact-row > summary { padding-right: 11px; }
+      .fact-detail { padding-left: 18px; padding-right: 16px; }
+      .fact-row { scroll-margin-top: 80px; }
+      .gap-record > summary { font-size: 13px; }
+      .key-hint { display: none; }
+      #close-notes { font-size: 12px; padding: 7px 10px; }
+      .cover { padding-left: 24px; padding-right: 24px; }
+      .cover-sheet { padding-left: 20px; }
+      .cover h1 { font-size: 25px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
+  </style>
+  <script id="note-data" type="application/json">{"facts":[{"id":"F01","alias":"目标用户与问题假设","page":"演示材料 1","section":"栖页 · 问题定义","point":"虚构演示自述：栖页面向小型协作团队，拟解决成员查找现行流程说明时无法确认内容是否有效的问题；痛点尚未经过真实调研验证。","source_quote":"虚构材料：目标场景是成员查找现行流程说明。我们假设文档分散、负责人不明确可能造成反复询问，但没有访谈记录、行为日志或发生频次。","kind":"虚构演示自述／问题假设"},{"id":"F02","alias":"个人职责与阶段产物","page":"演示材料 1","section":"栖页 · 职责边界","point":"虚构演示自述：产品负责人的个人产物为问题定义草稿、查找任务流程与低保真原型；材料未证明开发上线、正式调研或业务结果。","source_quote":"虚构材料：我负责澄清问题、画出查找与确认文档的流程，并制作低保真原型；研发估算、设计评审及上线记录均未提供。","kind":"虚构演示自述／职责与产物"},{"id":"F03","alias":"方案选择与范围约束","page":"演示材料 2","section":"栖页 · 方案草案","point":"虚构演示自述：首版草案选择统一入口、关键词查找、内容负责人和有效状态；暂缓自动生成答案。该选择是待验证的产品取舍，未证明优于现有工具。","source_quote":"虚构材料：查找入口需要展示内容来源、负责人及有效状态。自动生成答案暂缓，先验证能否找到并确认资料；尚无竞品对比或可用性结果。","kind":"虚构演示自述／待验证取舍"},{"id":"F04","alias":"验证指标与归因缺口","page":"演示材料 2","section":"栖页 · 验证计划","point":"虚构演示自述：计划围绕有效查找任务完成率、任务耗时和错误使用过期内容的情况验证价值；没有埋点数据、对照结果或收益数值。","source_quote":"虚构材料：完成任务应指成员找到适用资料并确认其有效性，不能仅以点击文档计数。采集方式、观察窗口、样本和成功阈值仍待约定，未实施 A/B。","kind":"虚构演示自述／验证计划与待补信息"},{"id":"F05","alias":"资源协作与投入判断","page":"演示材料 3","section":"栖页 · 协作假设","point":"虚构演示自述：计划与研发、内容维护者及业务负责人确认权限、维护责任和最小交付范围；资源承诺与上线时间均未确定。","source_quote":"虚构材料：研发需要确认接入和权限约束，内容维护者需要承担有效性更新，业务负责人需要明确试用目标；当前没有排期、协作纪要或冲突处理实例。","kind":"虚构演示自述／协作计划与待补信息"}],"questions":[{"id":"Q01","round":1,"priority":"P0","basis":"沿目标用户、具体任务和问题证据检查需求定义，避免把功能想法当成已验证需求。","fact_ids":["F01"],"question":"栖页为谁解决什么问题？你目前凭什么认为这个问题值得解决？","aim":"区分用户、任务、问题假设与已有证据，并说明下一步如何降低不确定性。","answer_type":"虚构材料复述／证据边界／假设验证计划","answer":"按这份虚构材料，栖页面向需要查找现行流程说明的小型协作团队。问题假设是成员找到文档后仍无法确认是否适用，因而可能反复询问。材料没有真实访谈或行为记录，所以我只能说这是待验证假设。我会先观察成员完成一次具体查找任务，记录在哪里停顿、用什么办法确认、失败后造成什么影响，再比较发生频率和替代办法的成本，判断是否值得投入。","details":"观察和交流属于下一步计划。不能把问题假设改写为已经调研确认的结论，也不能从文档分散直接推出需要建设新产品。","followups":[{"question":"如果成员说现在的群聊和共享文档已经够用，你会怎么处理？","answer_type":"假设方案","answer":"我会请对方按真实任务演示现有办法，观察是否能找到适用内容、耗时多少、何时需要额外确认。如果现有办法已能可靠完成关键任务，就没有足够理由增加一个入口；可以先改善命名或维护规则。只有出现重复且有影响的问题，才继续讨论产品方案。"},{"question":"你会向用户问哪一个具体问题，避免得到礼貌性的肯定？","answer_type":"假设方案","answer":"我会问：『请回想最近一次需要确认某个流程说明的经历，从哪里开始找，最后怎样判断它有效？』再围绕实际动作追问，而不是先介绍栖页并问愿不愿意使用。一次回忆只能提供线索，我还需要观察任务或核对记录，不能把口头赞同当成采用意愿。"}],"gaps":["【待补充：目标团队的筛选条件、真实查找任务与问题发生频率】","【待补充：现有替代办法、失败后果及可核对的问题证据】"],"source_urls":[]},{"id":"Q02","round":1,"priority":"P0","basis":"从具体产物追溯个人决策及其依据，检查参与范围与结果陈述是否一致。","fact_ids":["F02","F03"],"question":"你在栖页中亲自做了什么？从问题定义到原型，有哪一个关键决定？","aim":"用个人产物、决策过程和职责边界说明贡献，不用团队愿景替代个人经历。","answer_type":"虚构材料复述／待补证据","answer":"在这个虚构案例里，我的职责是问题定义草稿、查找任务流程和低保真原型。草案中的关键决定，是把『找到资料』扩展为『找到资料并确认有效』，所以结果页要呈现来源、负责人和有效状态，不能只有标题列表。这能解释方案与问题假设的联系，但材料没有用户验证，也没有上线记录。我能说明设计理由，不能声称这个决定已经提高了任务完成率。","details":"原型属于阶段产物，不等于开发完成。现有材料未提供评审记录或团队分工，不能补写为主导完整交付。","followups":[{"question":"怎样证明这确实是你的决定，而不是后来总结出来的说法？","answer_type":"证据缺口与补充计划","answer":"当前演示材料不足以证明归属。实际说明时，我需要提供当时的问题定义版本、方案对比、原型修改记录及评审中的个人输入，交代别人提出了什么、我决定了什么。缺少这些证据就保留职责边界，不能把团队最终采用的方案全部归到个人名下。"},{"question":"原型完成后，你认为这一阶段可以结束了吗？","answer_type":"假设方案","answer":"如果阶段目标只是表达方案，原型评审可以检查流程是否完整；如果目标是证明方案可用，原型画完还不够。我会事先约定代表性任务，让参与者独立查找并确认一份资料，记录失败点。当前没有执行结果，所以只能确认有产物，不能确认方案已经通过验证。"}],"gaps":["【待补充：个人产物版本、关键决定的时间记录和评审依据】","【待补充：本阶段验收目标、任务样例及验证结果】"],"source_urls":[]},{"id":"Q03","round":2,"priority":"P0","basis":"加入成本与可靠性约束，比较替代方案，并说明什么证据会改变首版范围。","fact_ids":["F01","F03","F05"],"question":"为什么首版先做查找和内容状态，暂缓自动生成答案？如果只允许做一项，你怎么选？","aim":"解释需求到方案的取舍，识别前提和替代办法，而不是以功能数量决定优先级。","answer_type":"虚构材料复述／假设取舍","answer":"草案的假设是用户首先需要找到可信的现行资料。自动生成答案仍依赖来源和有效性，还会增加错误结论与维护成本，所以我会先验证基础查找是否解决关键任务。但这不是已证明的最优解。若只能做一项，我会先确认真正的阻碍：找不到就改善入口，版本不明就明确内容状态；如果主要问题是没有人维护资料，应先解决责任机制，而不是继续加功能。","details":"不同问题对应不同最小方案。内容负责人、权限和维护成本是交付前提，不能默认存在。这里没有具体研发工时或模型费用，因此不填造成本比值。","followups":[{"question":"业务负责人坚持要自动生成答案，你会直接否决吗？","answer_type":"假设方案","answer":"我会先确认他希望改善的是任务耗时、展示效果还是其他目标，再用同一组任务比较搜索、人工整理和生成答案。若生成确有增益，可以限制在来源明确的内容中试用，并约定错误和成本的停止条件；若暂时没有证据，就说明依赖与代价，提交可比较的选项。最终决定和责任人需要明确，不能用个人偏好代替取舍。"},{"question":"什么结果会让你推翻首版方案？","answer_type":"假设验证计划","answer":"如果观察发现资料容易找到，真正耗时来自跨文档理解，单纯改善入口可能价值有限；如果资料长期无人更新，展示有效状态也无法自动保证可信。我会据此调整问题定义，分别验证整理辅助或维护机制。方案可以被证据推翻，不能因为已经画了原型就继续投入。"}],"gaps":["【待补充：不同查找失败类型的分布、方案对比结果和资源约束】"],"source_urls":[]},{"id":"Q04","round":2,"priority":"P0","basis":"从指标定义追到采集、分母、护栏与归因，检查结果能否支撑产品决策。","fact_ids":["F04"],"question":"你如何定义有效查找任务完成率？即使指标提高，怎样判断是否来自栖页？","aim":"区分行为代理指标与真实任务结果，提出可执行的验证与归因办法。","answer_type":"虚构材料复述／假设验证计划","answer":"材料只有验证计划，没有测量结果。我会先约定任务起点、结束条件和观察窗口：分母为符合范围且实际开始的查找任务数 N，分子为在窗口内找到适用资料并确认其有效的任务数 S，完成率为 S/N。点击文档不足以证明完成，试用阶段可用任务确认与抽样核对补充。比较前后还要检查任务难度、人群和内容变化；存在可行且互不干扰的分组时再做对照，否则只能说明变化相关，不能断言因果。","details":"N 为零时不计算完成率。重复打开同一任务不应重复计入分母；放弃与失败任务不能被静默剔除。任务耗时需要同时报告完成与未完成情况，避免只看成功样本。","followups":[{"question":"完成率提高了，为什么仍可能不值得继续投入？","answer_type":"假设分析","answer":"可能只是试用人群更熟练、任务更简单，或者用户为了快速完成而误用了过期内容。我会同时看任务耗时、错误使用资料的情况，以及内容维护和使用成本。即便改善可信，也需要对照原定目标判断收益是否覆盖持续投入；单个指标变好不能自动证明产品成功。"},{"question":"用户少，做不了可靠的 A/B，你会怎么验证？","answer_type":"假设验证计划","answer":"我会先用代表性任务做受控可用性观察，再在可比场景中记录使用前后的任务结果，固定内容版本并标注同期变化。任务重复会带来学习效应，可以安排不同但相近的任务，并调整使用顺序。这能定位问题、提供方向性证据，但不足以替代可靠的因果验证；小样本的波动和局限需要明确呈现。"}],"gaps":["【待补充：任务边界、观察窗口、采集方式与有效性核对标准】","【待补充：样本构成、基线、成功阈值和可行的对照条件】"],"source_urls":[]},{"id":"Q05","round":3,"priority":"P1","basis":"把方向选择落到有限资源、价值验证与停止条件，检查是否能对投入负责。","fact_ids":["F01","F03","F04","F05"],"question":"栖页值得作为独立产品继续做吗？资源有限时，你会如何决定下一阶段投入？","aim":"从客户与业务结果判断方向，比较独立产品、现有工具改进和停止投入。","answer_type":"假设决策方案","answer":"目前证据不足以支持独立产品立项。我会先确认问题是否重复出现、影响是否足够大、现有工具能否低成本解决，再验证团队是否愿意持续使用和维护。下一阶段只投入到能区分这些判断的最小试验，例如让一个明确范围的团队完成真实查找任务，并记录维护负担。如果改善有限或依赖难以维持，就缩小为现有工具中的规则或停止。继续投入的标准要提前约定，不能把原型完成当成方向成立。","details":"官方产品能力资料强调用户与业务结果、取舍和协作，仅用于补充评价视角，不为虚构案例提供结果证据，也不代表所有组织采用相同流程。","followups":[{"question":"有人认为这个方向有战略价值，短期没有数据也应继续，你如何讨论？","answer_type":"假设方案","answer":"我会请对方说明战略价值依赖什么前提、何时能观察到信号，以及愿意承担多少投入和机会成本。长期方向可以保留，但应把下一阶段做成有预算边界和复盘节点的验证。如果到期仍无法降低关键不确定性，需要重新决定范围，而不是用战略价值解释任何结果。"},{"question":"如果试用反馈很好，但没人愿意承担内容维护，你怎么判断？","answer_type":"假设决策方案","answer":"这说明采用前提尚未成立。栖页的价值依赖资料持续有效，短期好评不能抵消维护责任缺位。我会核实维护是否能进入现有工作流程、成本能否被受益方接受；如果始终无人承担，就缩小内容范围或停止推进。不能靠默认有人兜底来承诺长期可信。"}],"gaps":["【待补充：目标团队的持续使用证据、维护成本、投入边界与复盘标准】"],"source_urls":["https://www.atlassian.com/company/careers/resources/career-growth/product-managers"]},{"id":"Q06","round":3,"priority":"P1","basis":"引入权限和资源分歧，观察如何在没有直接管理权时推动明确决策。","fact_ids":["F02","F05"],"question":"研发认为权限接入成本高，业务又要求尽快试用，你如何推动下一步？","aim":"明确共同目标、不可妥协约束、可选范围与决策责任，避免只说加强沟通。","answer_type":"假设协作方案","answer":"材料没有真实冲突实例，因此我只能说明处理方案。我会先和双方确认试用要回答什么问题，请研发列出接入依赖和风险，请业务明确必须覆盖的任务。可选方案可能是使用获准共享的少量资料验证流程，或先完成权限接入再试用；敏感内容不能靠绕过权限抢时间。把范围、成本、证据价值和责任人放在同一份决策记录中，确定选择与复盘时间。若仍超出资源边界，就缩小目标或提交负责人决策。","details":"没有排期或资源承诺时，不填造交付日期。产品负责人需要组织比较和决策，但不能替研发承诺工时，也不能替内容所有者授权。","followups":[{"question":"你没有管理权，对方一直不给资源怎么办？","answer_type":"假设协作方案","answer":"我会先查清是目标优先级不同、容量不足，还是依赖没有说清，再提供缩小范围、调整时间或暂停的选项。仍无法达成一致，就把影响和机会成本提交有权分配资源的人，并记录决定。推动协作不等于可以越过资源负责人，也不能在没有承诺时对外宣称已经排期。"},{"question":"如何确保讨论结束后真的向前推进，而不是又开一次会？","answer_type":"假设方案","answer":"我会把结论写成可检查的动作：谁确认哪类资料可用，谁给出接入评估，谁准备验证任务，各自何时反馈，以及哪些前提不满足就调整范围。复盘时核对产物和未决事项，而不是只问进度。当前案例没有执行记录，所以这些是计划，不能当成已经完成的协作结果。"}],"gaps":["【待补充：权限与内容边界、研发评估、资源承诺和决策记录】"],"source_urls":["https://www.atlassian.com/company/careers/resources/career-growth/product-managers"]}],"sources":[{"title":"Atlassian 产品能力与协作评价参考","url":"https://www.atlassian.com/company/careers/resources/career-growth/product-managers","note":"官方资料用于校准用户与业务结果、取舍、沟通与跨团队协作等评价维度。栖页及本页所有经历、产物和方案均为虚构演示；资料不证明案例事实，也不代表通用的轮次安排。"}],"version":"公开演示 · 栖页为虚构产品，全部经历与材料均为演示自述","track":"product","stats":{"main_questions":6,"followups":12,"total_answers":18,"atomic_points":5,"covered_points":5,"missing_points":[],"round_counts":{"1":2,"2":2,"3":2},"priority_counts":{"P0":4,"P1":2}}}</script>
+</head>
+<body>
+  <main id="cover" class="cover">
+    <section class="cover-sheet" aria-labelledby="cover-title">
+      <h1 id="cover-title">研习笔记</h1>
+      <p class="cover-description">问题、依据与判断的学习记录。</p>
+      <button id="open-notes" class="primary" type="button" aria-controls="workspace" aria-expanded="false">打开笔记</button>
+      <p class="cover-hint">按 Esc 或切换窗口，内容会自动收起。</p>
+      <p id="cover-error" class="cover-error" role="alert" hidden></p>
+    </section>
+  </main>
+  <div id="workspace" class="workspace" hidden></div>
+  <div id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script>
+  (() => {
+    'use strict';
+
+    const cover = document.getElementById('cover');
+    const host = document.getElementById('workspace');
+    const openButton = document.getElementById('open-notes');
+    const announcer = document.getElementById('announcer');
+    const errorMessage = document.getElementById('cover-error');
+    let data;
+    try {
+      data = JSON.parse(document.getElementById('note-data').textContent);
+      if (!data || !Array.isArray(data.questions) || !Array.isArray(data.facts)) throw new Error('Invalid data');
+    } catch (_) {
+      openButton.disabled = true;
+      errorMessage.hidden = false;
+      errorMessage.textContent = '内容未就绪，请重新生成本地文件。';
+      return;
+    }
+
+    const array = value => Array.isArray(value) ? value : [];
+    const text = value => value == null ? '' : String(value);
+    const normalize = value => text(value).toLocaleLowerCase().normalize('NFKC');
+    const flatten = value => {
+      if (value == null) return '';
+      if (Array.isArray(value)) return value.map(flatten).join(' ');
+      if (typeof value === 'object') return Object.values(value).map(flatten).join(' ');
+      return text(value);
+    };
+    const questions = data.questions;
+    const facts = data.facts;
+    const sources = array(data.sources);
+    const factsById = new Map(facts.map(fact => [text(fact.id), fact]));
+    const questionsById = new Map(questions.map(question => [text(question.id), question]));
+    const factQuestions = new Map(facts.map(fact => [text(fact.id), []]));
+    for (const question of questions) {
+      for (const id of array(question.fact_ids)) {
+        if (!factQuestions.has(text(id))) factQuestions.set(text(id), []);
+        factQuestions.get(text(id)).push(question);
+      }
+    }
+    const questionText = new Map(questions.map(question => [text(question.id), normalize(flatten(question) + ' ' + array(question.fact_ids).map(id => flatten(factsById.get(text(id)))).join(' '))]));
+    const sourceText = new Map(sources.map(source => [source, normalize(flatten(source))]));
+    const state = { open: false, view: 'entries', round: 'all', search: '' };
+    const productTrack = data.track === 'product';
+    const noteTitle = productTrack ? '产品笔记' : '技术笔记';
+    const subtitle = productTrack ? '用户 · 取舍 · 价值' : '实现 · 约束 · 判断';
+    const roundNames = productTrack
+      ? { 1: '经历复盘', 2: '产品分析', 3: '业务判断' }
+      : { 1: '基础', 2: '进阶', 3: '综合' };
+    document.title = noteTitle;
+    document.getElementById('cover-title').textContent = noteTitle;
+    document.querySelector('.cover-description').textContent = productTrack
+      ? '用户问题、产品取舍与业务价值的学习记录。'
+      : '系统实现、工程约束与技术判断的学习记录。';
+    const viewNames = { entries: '条目', facts: '逐点索引', gaps: '待补记录', sources: '参考资料' };
+    const followupCount = questions.reduce((total, question) => total + array(question.followups).length, 0);
+    let content;
+    let searchInput;
+    let roundFilter;
+    let clearButton;
+    let navButtons = [];
+
+    function node(tag, className, value) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (value != null) element.textContent = text(value);
+      return element;
+    }
+
+    function button(label, handler, className = 'text-button') {
+      const element = node('button', className, label);
+      element.type = 'button';
+      element.addEventListener('click', handler);
+      return element;
+    }
+
+    function tokens() { return normalize(state.search.trim()).split(/\s+/u).filter(Boolean); }
+    function matches(haystack) { return tokens().every(token => haystack.includes(token)); }
+    function roundMatches(question) { return state.round === 'all' || text(question.round) === state.round; }
+    function filteredQuestions() { return questions.filter(question => roundMatches(question) && matches(questionText.get(text(question.id)) || '')); }
+
+    function typeBadge(value) {
+      const kind = text(value);
+      if (kind.includes('待确认')) return node('span', 'type-badge pending', '待确认');
+      if (kind.includes('原理')) return node('span', 'type-badge principle', '原理');
+      if (kind.includes('假设') || kind.includes('建议')) return node('span', 'type-badge proposal', '假设');
+      if (kind.includes('估算')) return node('span', 'type-badge estimate', '估算');
+      if (kind.includes('事实')) return node('span', 'type-badge', '事实');
+      return node('span', 'type-badge', kind || '记录');
+    }
+
+    function richText(value) {
+      const wrapper = node('div', 'rich');
+      const lines = text(value).replace(/\r\n?/g, '\n').split('\n');
+      let paragraph = [];
+      let list = null;
+      let fence = null;
+      let codeLines = [];
+      const flushParagraph = () => {
+        if (paragraph.length) wrapper.append(node('p', '', paragraph.join('\n')));
+        paragraph = [];
+      };
+      const flushCode = () => {
+        const figure = node('figure', 'code-block');
+        figure.append(node('figcaption', 'code-label', fence || '代码'));
+        const pre = node('pre');
+        pre.tabIndex = 0;
+        pre.setAttribute('aria-label', (fence || '代码') + '内容');
+        pre.append(node('code', '', codeLines.join('\n')));
+        figure.append(pre);
+        wrapper.append(figure);
+        codeLines = [];
+      };
+      for (const line of lines) {
+        const marker = line.match(/^\s*```\s*(.*)$/);
+        if (marker) {
+          flushParagraph();
+          list = null;
+          if (fence !== null) { flushCode(); fence = null; }
+          else { fence = marker[1].trim(); codeLines = []; }
+          continue;
+        }
+        if (fence !== null) { codeLines.push(line); continue; }
+        if (!line.trim()) { flushParagraph(); list = null; continue; }
+        const bullet = line.match(/^\s*([-*]|\d+[.)])\s+(.+)$/);
+        if (bullet) {
+          flushParagraph();
+          const tag = /^\d/.test(bullet[1]) ? 'ol' : 'ul';
+          if (!list || list.tagName.toLowerCase() !== tag) { list = node(tag); wrapper.append(list); }
+          list.append(node('li', '', bullet[2]));
+          continue;
+        }
+        const heading = line.match(/^#{1,4}\s+(.+)$/);
+        if (heading) { flushParagraph(); list = null; wrapper.append(node('h4', '', heading[1])); continue; }
+        list = null;
+        paragraph.push(line);
+      }
+      if (fence !== null) flushCode();
+      flushParagraph();
+      return wrapper;
+    }
+
+    function safeUrl(value) {
+      try {
+        const url = new URL(text(value));
+        return url.protocol === 'https:' && !url.username && !url.password ? url : null;
+      } catch (_) { return null; }
+    }
+
+    function sourceLink(value, label) {
+      const url = safeUrl(value);
+      if (!url) return node('span', '', label || '地址不可用');
+      const link = node('a', '', label || url.hostname);
+      link.href = url.href;
+      link.target = '_blank';
+      link.rel = 'noreferrer noopener';
+      return link;
+    }
+
+    function locationLabel(fact) {
+      return [fact.page == null ? '' : '第 ' + text(fact.page) + ' 页', text(fact.section)].filter(Boolean).join(' · ');
+    }
+
+    function uniqueGaps(question) {
+      const values = array(question.gaps).map(text).filter(Boolean);
+      const contentText = [question.answer, question.details, ...array(question.followups).map(flatten)].map(text).join('\n');
+      for (const match of contentText.matchAll(/【(?:待补充|待确认)[：:]?([^】]+)】/g)) values.push(match[1].trim());
+      return [...new Set(values)];
+    }
+
+    function addMeta(dl, label, value) {
+      if (!text(value)) return;
+      dl.append(node('dt', '', label), node('dd', '', value));
+    }
+
+    function renderEvidence(question) {
+      const details = node('details', 'evidence');
+      details.dataset.evidence = text(question.id);
+      details.append(node('summary', '', '查看依据与核对 · ' + array(question.fact_ids).length + ' 点'));
+      const meta = node('dl', 'evidence-meta');
+      addMeta(meta, '考察目标', question.aim);
+      addMeta(meta, '优先依据', question.basis);
+      details.append(meta);
+      const list = node('ul', 'evidence-list');
+      for (const id of array(question.fact_ids)) {
+        const fact = factsById.get(text(id));
+        const li = node('li');
+        const jump = button(text(id), () => navigateToFact(text(id)));
+        jump.dataset.factLink = text(id);
+        jump.setAttribute('aria-label', '定位信息点 ' + text(id));
+        li.append(jump, node('span', 'evidence-point', fact ? fact.point : '来源待核对'));
+        if (fact) {
+          li.append(node('p', 'source-location', locationLabel(fact)));
+          if (fact.source_quote) li.append(node('blockquote', 'source-quote', fact.source_quote));
+        }
+        list.append(li);
+      }
+      details.append(list);
+      return details;
+    }
+
+    function renderQuestion(question) {
+      const id = text(question.id);
+      const article = node('article', 'entry');
+      article.id = 'entry-' + id;
+      article.dataset.questionId = id;
+      article.tabIndex = -1;
+      const meta = node('div', 'entry-meta');
+      meta.append(node('code', 'entry-id', id), node('span', '', roundNames[question.round] || '其他'), node('span', 'entry-priority', question.priority));
+      article.append(meta, node('h3', '', question.question));
+      const body = node('div', 'entry-body');
+      const main = node('details', 'answer-block');
+      main.dataset.mainAnswer = id;
+      const summary = node('summary', '', '主答');
+      summary.append(typeBadge(question.answer_type));
+      main.append(summary);
+      const answer = node('div', 'answer-content');
+      answer.append(richText(question.answer));
+      if (text(question.details).trim()) {
+        const details = node('section', 'technical-details');
+        details.dataset.technicalDetails = id;
+        details.append(node('h4', 'technical-heading', '补充说明'), richText(question.details));
+        answer.append(details);
+      }
+      const linkedSources = array(question.source_urls);
+      if (linkedSources.length) {
+        const links = node('div', 'entry-sources');
+        links.append(node('span', '', '相关资料'));
+        for (const value of linkedSources) {
+          const matchingSource = sources.find(source => text(source.url) === text(value));
+          links.append(sourceLink(value, matchingSource ? matchingSource.title : undefined));
+        }
+        answer.append(links);
+      }
+      main.append(answer);
+      body.append(main, renderEvidence(question));
+      const followups = array(question.followups);
+      if (followups.length) {
+        body.append(node('h4', 'followup-heading', '延伸讨论 · ' + followups.length + ' 条'));
+        followups.forEach((followup, index) => {
+          const item = node('details', 'followup');
+          item.dataset.followup = id + '-' + (index + 1);
+          item.append(node('summary', '', (index + 1) + '. ' + text(followup.question)));
+          const section = node('div', 'followup-content');
+          section.append(typeBadge(followup.answer_type), richText(followup.answer));
+          item.append(section);
+          body.append(item);
+        });
+      }
+      const gaps = uniqueGaps(question);
+      if (gaps.length) {
+        const detail = node('details', 'entry-gaps');
+        detail.append(node('summary', '', '待补记录 · ' + gaps.length + ' 项'));
+        const list = node('ul');
+        for (const gap of gaps) list.append(node('li', '', gap));
+        detail.append(list);
+        body.append(detail);
+      }
+      article.append(body);
+      return article;
+    }
+
+    function viewHeader(title, count, description) {
+      const heading = node('div', 'view-header');
+      const h2 = node('h2', 'view-title', title);
+      h2.id = 'view-title';
+      h2.tabIndex = -1;
+      heading.append(h2, node('p', 'result-count', count));
+      content.append(heading);
+      if (description) content.append(node('p', 'view-description', description));
+    }
+
+    function emptyState() {
+      const empty = node('div', 'empty-state');
+      empty.append(node('strong', '', '没有匹配的记录'), node('p', '', '试试缩短关键词，或清空筛选查看全部内容。'));
+      empty.append(button('清空筛选', () => { state.search = ''; state.round = 'all'; syncControls(); renderView(); searchInput.focus(); }, 'quiet-button'));
+      content.append(empty);
+    }
+
+    function renderEntries() {
+      const visible = filteredQuestions();
+      const count = visible.reduce((total, question) => total + array(question.followups).length, 0);
+      viewHeader('条目', visible.length + ' / ' + questions.length + ' 条 · 延伸 ' + count + ' 条', '按' + Object.values(roundNames).join('、') + '组织。主答、依据与延伸讨论可分别展开。');
+      if (!visible.length) return emptyState();
+      const list = node('div', 'entry-list');
+      list.id = 'entry-list';
+      const fragment = document.createDocumentFragment();
+      for (const question of visible) fragment.append(renderQuestion(question));
+      list.append(fragment);
+      content.append(list);
+    }
+
+    function renderFacts() {
+      const visibleIds = new Set(filteredQuestions().map(question => text(question.id)));
+      const visible = facts.filter(fact => {
+        const linked = factQuestions.get(text(fact.id)) || [];
+        if (state.round === 'all' && !state.search.trim()) return true;
+        return linked.some(question => visibleIds.has(text(question.id))) || (state.round === 'all' && matches(normalize(flatten(fact))));
+      });
+      viewHeader('逐点索引', visible.length + ' / ' + facts.length + ' 点', '每个信息点保留来源和关联条目。展开后可定位到对应主答。');
+      if (!visible.length) return emptyState();
+      const list = node('div', 'index-list');
+      list.id = 'fact-list';
+      for (const fact of visible) {
+        const id = text(fact.id);
+        const details = node('details', 'fact-row');
+        details.id = 'fact-' + id;
+        details.dataset.factId = id;
+        const summary = node('summary');
+        const line = node('span', 'fact-summary');
+        line.append(node('code', '', id), node('span', '', fact.point));
+        summary.append(line);
+        details.append(summary);
+        const detail = node('div', 'fact-detail');
+        detail.append(node('p', 'source-location', locationLabel(fact)));
+        if (fact.kind) detail.append(typeBadge(fact.kind));
+        if (fact.source_quote) detail.append(node('blockquote', 'source-quote', fact.source_quote));
+        const linked = (factQuestions.get(id) || []).filter(roundMatches);
+        detail.append(node('p', 'source-location', linked.length ? '关联条目' : '关联记录待核对'));
+        const links = node('ul', 'fact-question-links');
+        for (const question of linked) {
+          const li = node('li');
+          const jump = button('', () => navigateToQuestion(text(question.id)));
+          jump.dataset.questionLink = text(question.id);
+          jump.append(node('code', '', question.id), node('span', '', question.question));
+          li.append(jump);
+          links.append(li);
+        }
+        detail.append(links);
+        details.append(detail);
+        list.append(details);
+      }
+      content.append(list);
+    }
+
+    function renderGaps() {
+      const visible = filteredQuestions().map(question => ({ question, gaps: uniqueGaps(question) })).filter(record => record.gaps.length);
+      const count = visible.reduce((total, record) => total + record.gaps.length, 0);
+      viewHeader('待补记录', visible.length + ' 个条目 · ' + count + ' 项', '待确认的位置与信息缺口集中列出。这里的建议不代表已经发生的经历。');
+      if (!visible.length) return emptyState();
+      const list = node('div', 'index-list');
+      list.id = 'gap-list';
+      for (const { question, gaps } of visible) {
+        const record = node('details', 'gap-record');
+        record.dataset.gapQuestion = text(question.id);
+        const summary = node('summary');
+        summary.append(node('code', '', question.id), node('span', '', question.question));
+        record.append(summary);
+        const body = node('div', 'gap-record-body');
+        const gapList = node('ul');
+        for (const gap of gaps) gapList.append(node('li', '', gap));
+        body.append(gapList);
+        const jump = button('查看对应条目', () => navigateToQuestion(text(question.id)));
+        jump.dataset.questionLink = text(question.id);
+        body.append(jump);
+        record.append(body);
+        list.append(record);
+      }
+      content.append(list);
+    }
+
+    function renderSources() {
+      const visible = sources.filter(source => matches(sourceText.get(source) || ''));
+      viewHeader('参考资料', visible.length + ' / ' + sources.length + ' 份', '资料用于核对机制与版本。打开外部资料会切换窗口并收起当前内容。');
+      if (!visible.length) return emptyState();
+      const list = node('ul', 'source-list');
+      list.id = 'source-list';
+      visible.forEach((source, index) => {
+        const li = node('li', 'source-item');
+        li.dataset.sourceIndex = text(index);
+        const heading = node('h3', 'source-title');
+        heading.append(sourceLink(source.url, text(source.title) || '参考资料'));
+        li.append(heading);
+        const url = safeUrl(source.url);
+        if (url) li.append(node('span', 'source-domain', url.hostname + url.pathname));
+        if (source.note) li.append(node('p', 'source-note', source.note));
+        list.append(li);
+      });
+      content.append(list);
+    }
+
+    function syncControls() {
+      if (!state.open) return;
+      searchInput.value = state.search;
+      roundFilter.value = state.round;
+      roundFilter.disabled = state.view === 'sources';
+      searchInput.placeholder = state.view === 'sources' ? '搜索资料名称、说明或地址' : '搜索条目、答案、追问或信息点';
+      clearButton.disabled = !state.search && state.round === 'all';
+      navButtons.forEach(item => {
+        if (item.dataset.view === state.view) item.setAttribute('aria-current', 'page');
+        else item.removeAttribute('aria-current');
+      });
+    }
+
+    function renderView(focusHeading = false) {
+      if (!state.open || !content) return;
+      content.replaceChildren();
+      syncControls();
+      if (state.view === 'facts') renderFacts();
+      else if (state.view === 'gaps') renderGaps();
+      else if (state.view === 'sources') renderSources();
+      else renderEntries();
+      announcer.textContent = viewNames[state.view] + '已更新';
+      if (focusHeading) document.getElementById('view-title').focus({ preventScroll: true });
+    }
+
+    function navigateToQuestion(id) {
+      if (!questionsById.has(id) || !state.open) return;
+      state.view = 'entries'; state.round = 'all'; state.search = '';
+      renderView();
+      const article = document.getElementById('entry-' + id);
+      if (!article) return;
+      article.classList.add('targeted');
+      const answer = article.querySelector('[data-main-answer]');
+      if (answer) answer.open = true;
+      article.focus({ preventScroll: true });
+      article.scrollIntoView({ block: 'start', behavior: 'auto' });
+      announcer.textContent = '已定位到条目 ' + id;
+    }
+
+    function navigateToFact(id) {
+      if (!factsById.has(id) || !state.open) return;
+      state.view = 'facts'; state.round = 'all'; state.search = '';
+      renderView();
+      const fact = document.getElementById('fact-' + id);
+      if (!fact) return;
+      fact.open = true;
+      fact.querySelector('summary').focus({ preventScroll: true });
+      fact.scrollIntoView({ block: 'start', behavior: 'auto' });
+      announcer.textContent = '已定位到信息点 ' + id;
+    }
+
+    function closeNotes(returnFocus = true) {
+      if (!state.open) return;
+      state.open = false;
+      state.view = 'entries'; state.round = 'all'; state.search = '';
+      if (searchInput) searchInput.value = '';
+      host.replaceChildren();
+      host.hidden = true;
+      cover.hidden = false;
+      openButton.setAttribute('aria-expanded', 'false');
+      content = null; searchInput = null; roundFilter = null; clearButton = null; navButtons = [];
+      announcer.textContent = '内容已收起';
+      window.scrollTo(0, 0);
+      if (returnFocus) openButton.focus({ preventScroll: true });
+    }
+
+    function openNotes() {
+      if (state.open) return;
+      state.open = true;
+      state.view = 'entries'; state.round = 'all'; state.search = '';
+      cover.hidden = true;
+      host.hidden = false;
+      openButton.setAttribute('aria-expanded', 'true');
+      const header = node('header', 'workspace-header');
+      const title = node('h1', 'workspace-title', noteTitle);
+      title.append(node('span', 'header-subtitle', subtitle));
+      const close = button('收起内容', () => closeNotes(true), 'quiet-button');
+      close.id = 'close-notes';
+      close.append(node('span', 'key-hint', 'Esc'));
+      header.append(title, close);
+      const layout = node('div', 'workspace-layout');
+      const aside = node('aside', 'sidebar');
+      const nav = node('nav', 'nav');
+      nav.setAttribute('aria-label', '笔记分区');
+      navButtons = Object.entries(viewNames).map(([view, label]) => {
+        const item = button(label, () => { state.view = view; renderView(true); window.scrollTo(0, 0); }, 'nav-button');
+        item.dataset.view = view;
+        item.setAttribute('aria-controls', 'view-content');
+        nav.append(item);
+        return item;
+      });
+      const note = node('p', 'sidebar-note');
+      note.append(node('span', '', questions.length + ' 个条目'), node('span', '', followupCount + ' 条延伸讨论'), node('span', '', facts.length + ' 个信息点'), node('span', '', '切换窗口后自动收起'));
+      aside.append(nav, note);
+      const main = node('main', 'content-column');
+      const filters = node('form', 'filters');
+      filters.setAttribute('role', 'search');
+      filters.setAttribute('aria-label', '笔记检索');
+      filters.addEventListener('submit', event => event.preventDefault());
+      const searchField = node('div', 'filter-field');
+      const searchLabel = node('label', '', '全文检索');
+      searchLabel.htmlFor = 'search-input';
+      searchInput = node('input');
+      searchInput.id = 'search-input';
+      searchInput.type = 'search';
+      searchInput.autocomplete = 'off';
+      searchInput.spellcheck = false;
+      searchInput.setAttribute('aria-controls', 'view-content');
+      searchInput.addEventListener('input', () => { state.search = searchInput.value; renderView(); });
+      searchField.append(searchLabel, searchInput);
+      const roundField = node('div', 'filter-field');
+      const roundLabel = node('label', '', '内容层次');
+      roundLabel.htmlFor = 'round-filter';
+      roundFilter = node('select');
+      roundFilter.id = 'round-filter';
+      for (const [value, label] of [['all', '全部'], ...Object.entries(roundNames)]) {
+        const option = node('option', '', label);
+        option.value = value;
+        roundFilter.append(option);
+      }
+      roundFilter.addEventListener('change', () => { state.round = roundFilter.value; renderView(); });
+      roundField.append(roundLabel, roundFilter);
+      clearButton = button('清空筛选', () => { state.search = ''; state.round = 'all'; renderView(); searchInput.focus(); }, 'quiet-button');
+      clearButton.id = 'clear-filters';
+      filters.append(searchField, roundField, clearButton);
+      content = node('section');
+      content.id = 'view-content';
+      content.setAttribute('aria-labelledby', 'view-title');
+      const footer = node('footer', 'footer', '参考回答请结合实际记录核对。事实、待确认内容与假设方案分别保留。');
+      main.append(filters, content, footer);
+      layout.append(aside, main);
+      host.append(header, layout);
+      renderView();
+      window.scrollTo(0, 0);
+      searchInput.focus({ preventScroll: true });
+      announcer.textContent = '内容已打开';
+    }
+
+    openButton.addEventListener('click', openNotes);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && state.open) { event.preventDefault(); closeNotes(true); }
+    });
+    window.addEventListener('blur', event => {
+      if (event.target === window) closeNotes(false);
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') closeNotes(false);
+    });
+    window.addEventListener('pagehide', () => closeNotes(false));
+  })();
+  </script>
+</body>
+</html>
