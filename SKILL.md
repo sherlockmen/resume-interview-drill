@@ -7,6 +7,14 @@ description: "根据简历和目标岗位生成分轮面试问题、连续追问
 
 将简历里的每个信息点转成面试官可核对的问题，再写出候选人能讲清、经得起追问的答案。默认使用中文；岗位、轮次和输出范围服从用户要求。
 
+用户提供材料并简短要求“帮我准备面试”时，即执行本文件规定的完整流程：选择岗位路径、分轮问答、逐点覆盖、补齐所有追问答案、标明事实缺口，最后交付本地网页与中性展示。不要要求用户再次粘贴流程、模板或长提示词。材料未提供时，只需请求材料或其可读路径。
+
+## 运行约定
+
+- 本技能采用标准 `SKILL.md`，供支持 Agent Skills 的宿主加载；使用宿主现有的文件读取、文档解析、命令执行与浏览器能力，不依赖特定平台的工具名或调用前缀。`agents/openai.yaml` 仅提供 Codex 的可选界面信息，其他宿主无需读取它。
+- 将本文件所在目录视为技能根目录，按相对位置读取参考资料、脚本和模板；执行脚本时解析为实际路径，不能假设技能安装位置或当前工作目录。运行需要 Python 3.9+，优先使用宿主提供的解释器；`python3` 不存在时检查 `python` 或宿主运行时路径，不假设各系统的命令相同。材料与输出均放在用户工作目录，不写入技能安装目录。
+- 缺少文件读取或命令执行能力时，明确指出阻塞环节；不要把无法生成的网页称为已交付。可构建但缺少浏览器能力时，仍提供本地网页，并标注交互与可见预览尚未验证；不声称已通过浏览器验收。
+
 ## 0. 先选择岗位路径
 
 - 用户指定技术岗位时，使用 `track: technical`，读取 [references/technical-interviews.md](references/technical-interviews.md)。
@@ -102,7 +110,9 @@ Q-ID｜轮次｜优先级及依据
 
 ### 使用内置构建器
 
-复用 [scripts/build_notes.py](scripts/build_notes.py) 与 [assets/notes.html](assets/notes.html)，无需安装依赖。输入完整 JSON：顶层 `version`、`track`、`facts`、`questions`、`sources`。`track` 只能为 `technical` 或 `product`，一份 JSON 只能包含一个方向；旧题库缺省为 `technical`，转换已有产品题库时须显式填写 `product`。事实包含 `id/page/section/point/source_quote/kind`；问题包含 `id/round/priority/basis/fact_ids/question/aim/answer_type/answer/details/followups/gaps/source_urls`；追问包含 `question/answer_type/answer`；来源包含 `title/url/note`。`round` 为 1—3，语义由路径决定；空的可选字段使用空字符串或空数组。原始 PDF 路径不进入网页。
+复用 [scripts/build_notes.py](scripts/build_notes.py) 与 [assets/notes.html](assets/notes.html)，构建器仅使用 Python 标准库。输入完整 JSON：顶层 `version`、`track`、`facts`、`questions`、`sources`。`track` 只能为 `technical` 或 `product`，一份 JSON 只能包含一个方向；旧题库缺省为 `technical`，转换已有产品题库时须显式填写 `product`。事实包含 `id/page/section/point/source_quote/kind`；问题包含 `id/round/priority/basis/fact_ids/question/aim/answer_type/answer/details/followups/gaps/source_urls`；追问包含 `question/answer_type/answer`；来源包含 `title/url/note`。`round` 为 1—3，语义由路径决定；空的可选字段使用空字符串或空数组。原始 PDF 路径不进入网页。
+
+以下为命令示意；用已确认的 Python 解释器替换 `python3`，并按宿主 Shell 处理路径引号与换行。
 
 ```sh
 python3 <skill-dir>/scripts/build_notes.py <private-bank.json> \

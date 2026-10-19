@@ -1,4 +1,4 @@
 interface:
   display_name: "研习资料"
   short_description: "按技术或产品方向独立整理逐点问题、递进追问与有依据的回答，交付适合办公阅读的本地网页"
-  default_prompt: "使用 $resume-interview-drill，根据我的材料和目标岗位选择技术或产品经理路径，独立组织分轮问题、所有追问及回答，逐点覆盖并标注依据与待补信息，最终生成中性展示的本地网页；两个方向分别交付。"
+  default_prompt: "使用 $resume-interview-drill，根据我提供的材料帮我准备面试。"

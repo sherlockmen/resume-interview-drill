@@ -1,6 +1,6 @@
 <h1 align="center">Resume Interview Drill</h1>
 
-<p align="center"><strong>从一份简历，到逐点可查的分轮问答。</strong></p>
+<p align="center"><strong>一份材料，一句指令，生成分轮问答与本地网页。</strong></p>
 
 <p align="center">
   按技术岗位或产品经理独立组织分轮问题、连续追问和有依据的参考答案，<br>
@@ -8,16 +8,64 @@
 </p>
 
 <p align="center">
-  <code>Codex Skill</code> · <code>逐点覆盖</code> · <code>追问有答案</code> · <code>中性展示</code> · <a href="LICENSE">MIT</a>
+  <code>Agent Skill</code> · <code>逐点覆盖</code> · <code>追问有答案</code> · <code>中性展示</code> · <a href="LICENSE">MIT</a>
 </p>
 
 <p align="center">
-  <a href="#features">核心能力</a> ·
   <a href="#quick-start">快速开始</a> ·
+  <a href="#compatibility">平台兼容</a> ·
+  <a href="#features">核心能力</a> ·
   <a href="#tracks">岗位路径</a> ·
   <a href="#preview">更多效果</a> ·
   <a href="#privacy">隐私说明</a>
 </p>
+
+<a id="quick-start"></a>
+
+## 快速开始
+
+### 1. 安装一次
+
+```sh
+npx skills add sherlockmen/resume-interview-drill -g
+```
+
+按提示选择使用的平台。**DeepSeek Harness 选择 Codex**：两者默认共用 `~/.agents/skills/`。命令需要 Node.js/npm 与 Git；其他安装方式见下方。
+
+### 2. 附上材料，说一句
+
+在 Agent 中提供简历文件或本地路径，可选附上岗位 JD，然后发送：
+
+```text
+使用 resume-interview-drill，帮我准备面试。
+```
+
+需要指定方向时，加上“技术岗位”或“产品经理”即可。**分轮提问、逐点覆盖、追问与答案、事实缺口、本地网页及中性展示，全部内置在 Skill 中，无需重复交代。**
+
+完成后，点击 Agent 给出的本地网页链接开始练习。没有 JD 也能使用；两个方向同时准备时，分别生成独立网页。
+
+<a id="compatibility"></a>
+
+<details>
+<summary><strong>平台兼容与手动安装</strong> · Codex / Claude Code / DeepSeek Harness / OpenCode / Hermes</summary>
+
+采用 [Agent Skills 标准](https://agentskills.io/specification)，所有流程都在 `SKILL.md` 及其相对引用文件中。使用同一份技能包，不依赖某个平台的专属工具。
+
+| 平台 | 安装器中选择 | 手动安装的默认用户目录 | 显式调用方式 |
+| --- | --- | --- | --- |
+| [Codex](https://learn.chatgpt.com/docs/build-skills) | `codex` | `~/.agents/skills/` | `$resume-interview-drill` |
+| [Claude Code](https://code.claude.com/docs/en/skills) | `claude-code` | `~/.claude/skills/` | `/resume-interview-drill` |
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness/blob/master/packages/skill/skill-filesystem/README.md) | `codex`（共用目录） | `~/.agents/skills/` 或 `~/.dsh/skills/` | `/resume-interview-drill` |
+| [OpenCode](https://opencode.ai/docs/skills/) | `opencode` | `~/.config/opencode/skills/` | 使用上方自然语言请求 |
+| [Hermes Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/skills) | `hermes-agent` | `~/.hermes/skills/` | `/resume-interview-drill` |
+
+**不用安装器：** [下载仓库 ZIP](https://github.com/sherlockmen/resume-interview-drill/archive/refs/heads/master.zip)，将完整文件夹命名为 `resume-interview-drill`，放进对应目录。最终结构应为 `<技能目录>/resume-interview-drill/SKILL.md`，并保留 `references/`、`scripts/`、`assets/`。不要只复制一个 Markdown 文件。自定义用户目录以宿主配置为准；安装后若未发现，重新开启会话。
+
+**运行条件：** Agent 能读取材料、写入本地文件、执行命令，且环境中有 Python 3.9+。PDF 解析和浏览器预览使用宿主可用工具；构建器仅使用 Python 标准库。普通网页聊天框不等于具备这些能力的 Agent。
+
+目录与调用方式按各平台官方文档核对；安装参数见 [Skills CLI](https://github.com/vercel-labs/skills)。本仓库验证标准技能包、安装资源完整性和本地网页构建，未对以上所有客户端逐一完成端到端实测。其他支持同一标准且具备上述能力的平台，也可使用完整技能包。
+
+</details>
 
 <p align="center">
   <a href="docs/images/overview.png"><img src="docs/images/overview.png" alt="本地网页总览：全文搜索、轮次筛选和可折叠的问答" width="960"></a>
@@ -61,56 +109,6 @@
 **一次交付：** 分轮题库与答案、逐点覆盖表、待补信息、准备优先级，以及本地网页入口。
 
 AI 按 Skill 指引分析材料、生成问答；Python 构建器负责校验题库、脱敏与生成网页。“全量覆盖”指当前材料中的全部信息点，开放问题的变化无法穷尽。
-
-<a id="quick-start"></a>
-
-## 快速开始
-
-需要支持本地 Skills 的 **Codex**、**Python 3.9+** 和现代浏览器。Codex 需能读取材料、写入文件并运行命令；PDF 读取依赖宿主工具。网页构建器仅使用 Python 标准库。
-
-### 1. 安装
-
-下载仓库并解压，在包含 `SKILL.md` 的目录打开终端。以下命令适用于 macOS／Linux，安装位置遵循 Codex 的[本地 Skill 目录说明](https://learn.chatgpt.com/docs/build-skills#where-codex-loads-local-skills)：
-
-```sh
-mkdir -p "$HOME/.agents/skills/resume-interview-drill"
-cp -R SKILL.md LICENSE agents assets references scripts "$HOME/.agents/skills/resume-interview-drill/"
-python3 "$HOME/.agents/skills/resume-interview-drill/scripts/build_notes.py" --self-check
-```
-
-看到 `Self-check passed` 即表示构建器自检通过。已有同名 Skill 时先备份，复制会更新同名文件；若 Codex 尚未显示，重启后查看。
-
-### 2. 提供材料，发送指令
-
-在 Codex 中提供简历文件，按需附上目标岗位 JD，然后选择一条指令。
-
-**技术岗位**
-
-```text
-$resume-interview-drill
-根据我提供的简历，生成技术一面、技术二面和负责人轮的问题与参考答案。
-覆盖每个信息点，为所有列出的追问写出答案，并说明考察目的。
-未知经历与数据标记待补，假设方案单独标明。
-最后生成本地网页，附逐点覆盖表、待补信息和准备优先级。
-```
-
-**产品经理**
-
-```text
-$resume-interview-drill
-根据我提供的简历，使用产品经理路径，独立生成一面、二面和产品负责人轮的问答。
-覆盖每个信息点，所有追问都给答案，说明每一问想确认什么。
-重点追需求证据、方案取舍、个人贡献、跨团队推进、指标口径和效果归因。
-未知经历标记待补，假设场景单独标明，最后生成独立的产品路径本地网页。
-```
-
-Skill 的显示名称为“研习资料”，调用名称为 `$resume-interview-drill`。没有 JD 时，说明根据材料暂定的方向与资深程度后继续；AI 产品经理使用产品路径。若同时需要两类岗位，会交付两个独立题库、覆盖表与网页。
-
-### 3. 打开网页，逐项练习
-
-从交付链接打开本地 HTML：搜索主题、筛选轮次、展开答案，或从覆盖表跳转到对应问题。先练准备优先级较高的内容，再补齐待确认信息。
-
-展示入口使用 `outputs/reference-notes/` 下的中性目录与文件名：技术内容进入 `engineering/`，产品内容进入 `product/`。网页支持窄屏阅读，下载后无需启动服务。
 
 <a id="tracks"></a>
 
@@ -199,11 +197,7 @@ python3 scripts/build_notes.py docs/product-demo-bank.json --output docs/product
 <summary><strong>结合岗位 JD，调整深挖方向</strong></summary>
 
 ```text
-$resume-interview-drill
-结合我提供的简历和 Agent 工程师岗位 JD，组织分轮问题与参考答案。
-重点深挖 Agent 执行、状态管理、工具调用、失败恢复和评估。
-保留全部信息点的覆盖；缺失经历标记待补，设计题明确写成假设方案。
-最后生成本地网页。
+使用 resume-interview-drill，按这份 JD 准备 Agent 工程师方向。
 ```
 
 </details>
@@ -214,10 +208,7 @@ $resume-interview-drill
 提供更新后的材料与已有题库，再发送：
 
 ```text
-$resume-interview-drill
-对比更新后的简历与已有题库，修订受影响的问题、答案和覆盖关系。
-重新生成适合办公阅读的本地网页，使用中性标题和导航。
-网页中不要出现“简历、面试、求职、跳槽、招聘”，并清理姓名、联系方式和身份链接。
+使用 resume-interview-drill，按更新后的材料修订现有内容。
 ```
 
 </details>
